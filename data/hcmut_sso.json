@@ -1,0 +1,58 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "admin123",
+      "userId": "ADM001",
+      "isActive": true
+    },
+    {
+      "username": "2313292",
+      "password": "student123",
+      "userId": "STU001",
+      "isActive": true
+    },
+    {
+      "username": "2313078",
+      "password": "student123",
+      "userId": "STU002",
+      "isActive": true
+    },
+    {
+      "username": "2311066",
+      "password": "student123",
+      "userId": "STU003",
+      "isActive": true
+    },
+    {
+      "username": "2312995",
+      "password": "student123",
+      "userId": "STU004",
+      "isActive": true
+    },
+    {
+      "username": "2312549",
+      "password": "student123",
+      "userId": "STU005",
+      "isActive": true
+    },
+    {
+      "username": "faculty01",
+      "password": "faculty123",
+      "userId": "FAC001",
+      "isActive": true
+    },
+    {
+      "username": "staff01",
+      "password": "staff123",
+      "userId": "STA001",
+      "isActive": true
+    },
+    {
+      "username": "operator01",
+      "password": "operator123",
+      "userId": "OPR001",
+      "isActive": true
+    }
+  ]
+}
