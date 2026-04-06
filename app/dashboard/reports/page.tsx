@@ -21,7 +21,7 @@ import {
   TrendingUp, 
   Calendar, 
   Users,
-  Car,
+  Motorbike,
   DollarSign,
   Clock,
   PieChart
@@ -156,7 +156,7 @@ export default function ReportsPage() {
                   <p className="text-xs text-green-600 mt-1">+12% from last week</p>
                 </div>
                 <div className="p-3 bg-blue-100 rounded-full">
-                  <Car className="w-6 h-6 text-blue-600" />
+                  <Motorbike className="w-6 h-6 text-blue-600" />
                 </div>
               </div>
             </CardContent>
@@ -419,7 +419,7 @@ export default function ReportsPage() {
                 className="p-4 border rounded-lg hover:border-[#003366] hover:bg-blue-50 cursor-pointer transition-colors"
                 onClick={() => setReportType('sessions')}
               >
-                <Car className="w-8 h-8 text-[#003366] mb-2" />
+                <Motorbike className="w-8 h-8 text-[#003366] mb-2" />
                 <h4 className="font-semibold">Session Logs</h4>
                 <p className="text-sm text-gray-500">Detailed parking session records</p>
               </div>
