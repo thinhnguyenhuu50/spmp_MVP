@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { Checkbox } from '@/components/ui/checkbox';
+import ssoData from '@/data/hcmut_sso.json';
 
 export function LoginPage() {
   const [username, setUsername] = useState('');
@@ -176,11 +177,18 @@ export function LoginPage() {
               <div className="mt-8 bg-[#FFFFDD] border border-[#DDDDDD] p-3 text-[12px] text-[#777] rounded">
                 <h3 className="font-bold text-[#990033] mb-1">Demo Credentials</h3>
                 <ul className="space-y-1 font-mono">
-                  <li><strong>Admin:</strong> admin / admin123</li>
-                  <li><strong>Student:</strong> 2313292 / student123</li>
-                  <li><strong>Faculty:</strong> faculty01 / faculty123</li>
-                  <li><strong>Staff:</strong> staff01 / staff123</li>
-                  <li><strong>Operator:</strong> operator01 / operator123</li>
+                  {ssoData.users.map((user) => {
+                    const role = user.userId.startsWith('ADM') ? 'Admin' : 
+                                 user.userId.startsWith('STU') ? 'Student' : 
+                                 user.userId.startsWith('FAC') ? 'Faculty' : 
+                                 user.userId.startsWith('STA') ? 'Staff' : 
+                                 user.userId.startsWith('OPR') ? 'Operator' : 'User';
+                    return (
+                      <li key={user.userId}>
+                        <strong>{role}:</strong> {user.username} / {user.password}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </div>
