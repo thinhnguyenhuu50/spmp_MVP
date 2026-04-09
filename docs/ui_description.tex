@@ -1,0 +1,713 @@
+\documentclass[12pt,a4paper]{article}
+
+% ===== Packages =====
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+
+\geometry{margin=2.5cm}
+
+% ===== Header/Footer =====
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small IoT-SPMS -- User Interface Description}
+\fancyhead[R]{\small HCMUT}
+\fancyfoot[C]{\thepage}
+
+% ===== Hyperlink styling =====
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    urlcolor=blue!70!black,
+    citecolor=blue!70!black,
+}
+
+% ===== Title =====
+\title{
+    \vspace{-1cm}
+    \textbf{User Interface Description} \\[0.3cm]
+    \large IoT-based Smart Parking Management System (IoT-SPMS) \\[0.2cm]
+    \normalsize Ho Chi Minh City University of Technology (HCMUT)
+}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{fancy}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Introduction}
+% ============================================================
+
+This document describes the user interface (UI) of the \textbf{IoT-based Smart Parking Management System (IoT-SPMS)}, a web application developed for Ho Chi Minh City University of Technology (HCMUT). The system is built using \textbf{Next.js} (React) with \textbf{TypeScript} and styled with \textbf{Tailwind CSS}. UI components are provided by the \textbf{shadcn/ui} component library.
+
+The application serves multiple user roles:
+\begin{itemize}
+    \item \textbf{End Users} (Learners, Faculty, Staff) -- view parking availability, manage sessions, and handle billing.
+    \item \textbf{Parking Operators} -- manage visitor tickets and monitor active sessions.
+    \item \textbf{System Administrators} -- full access including user management, pricing policies, and analytics reports.
+\end{itemize}
+
+The UI adopts a \textbf{role-based access control} (RBAC) model, where the navigation sidebar and available pages dynamically adapt based on the authenticated user's role.
+
+% ============================================================
+\section{Authentication -- Login Page}
+\label{sec:login}
+% ============================================================
+
+The login page is the entry point of the application. It replicates the visual appearance of the \textbf{HCMUT Central Authentication Service (CAS)}, providing a familiar single sign-on (SSO) experience for university members.
+
+\subsection{Layout and Components}
+
+The page is organized as follows:
+
+\begin{itemize}
+    \item \textbf{Header Bar}: A dark purple banner (\texttt{\#210F7A}) displaying the HCMUT logo and the title ``Central Authentication Service''.
+    \item \textbf{Login Form (Left Panel)}: A light gray card containing:
+    \begin{itemize}
+        \item Username and Password input fields with a pale yellow background (\texttt{\#FFFFDD}).
+        \item A ``Warn me before logging me into other sites'' checkbox.
+        \item ``Login'' and ``Clear'' action buttons styled with a blue gradient.
+        \item A ``Change password?'' hyperlink.
+        \item Error messages displayed in a red dotted-border box when authentication fails.
+    \end{itemize}
+    \item \textbf{Information Sidebar (Right Panel)}: Contains:
+    \begin{itemize}
+        \item Language selection links (Vietnamese / English).
+        \item A ``Please note'' section explaining the SSO mechanism.
+        \item Technical support contact information.
+        \item A ``Demo Credentials'' section listing available test accounts dynamically loaded from the \texttt{hcmut\_sso.json} data file.
+    \end{itemize}
+    \item \textbf{Footer}: Copyright notice and a link to the Jasig CAS project.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{login_page.png}
+    \caption{Login Page -- HCMUT Central Authentication Service interface.}
+    \label{fig:login-page}
+\end{figure}
+
+% ============================================================
+\section{Dashboard Layout}
+\label{sec:dashboard-layout}
+% ============================================================
+
+Upon successful authentication, users are redirected to the dashboard. The dashboard layout is consistent across all internal pages and consists of three main regions.
+
+\subsection{Top Navigation Header}
+
+A sticky header bar with a dark blue background (\texttt{\#003366}) containing:
+\begin{itemize}
+    \item \textbf{Application Branding}: A circular white icon with a car symbol, the title ``Smart Parking System'', and the subtitle ``HCMUT IoT-SPMS''.
+    \item \textbf{Notification Bell}: A bell icon with a red dot indicator. Clicking it opens a dropdown showing recent system notifications (e.g., ``System Sync Completed'', ``Zone C is Full'').
+    \item \textbf{User Profile Menu}: Displays the user's avatar (initials), full name, and email. Clicking opens a dropdown with the user's role badge, a link to Settings, and a Logout button.
+    \item \textbf{Hamburger Menu} (mobile only): Toggles the sidebar on small screens.
+\end{itemize}
+
+\subsection{Left Sidebar Navigation}
+
+A white sidebar (264px wide) with navigation links that adapt based on the user's role:
+
+\begin{itemize}
+    \item \textbf{End Users}: Dashboard, Parking Map, My Sessions, Billing.
+    \item \textbf{Operators}: Dashboard, Parking Map, All Sessions, Visitor Tickets.
+    \item \textbf{Administrators}: Dashboard, Parking Map, All Sessions, User Management, Pricing Policies, Reports, Visitor Tickets.
+\end{itemize}
+
+The active page is highlighted with a dark blue background. At the bottom of the sidebar, a user info card displays the user's name, student ID or department, and current debt amount (if any).
+
+On mobile devices, the sidebar overlays the content with a semi-transparent black backdrop.
+
+\subsection{Main Content Area}
+
+The main content area occupies the remaining space to the right of the sidebar. It has a light gray background (\texttt{\#F9FAFB}) with 24px padding.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{dashboard_layout.png}
+    \caption{Dashboard Layout -- Header, sidebar navigation, and main content area.}
+    \label{fig:dashboard-layout}
+\end{figure}
+
+% ============================================================
+\section{Dashboard Overview}
+\label{sec:dashboard-overview}
+% ============================================================
+
+The Dashboard Overview is the default landing page after login. Its content varies based on the user's role.
+
+\subsection{Administrator / Operator View}
+
+\begin{itemize}
+    \item \textbf{Welcome Section}: A greeting message with the user's first name and a ``View Parking Map'' button.
+    \item \textbf{Statistics Cards} (4-column grid):
+    \begin{itemize}
+        \item \textit{Total Slots} -- total number of parking slots across all zones.
+        \item \textit{Available} -- number of free slots with a green indicator.
+        \item \textit{Occupied} -- number of occupied slots with a red indicator.
+        \item \textit{Active Sessions} -- count of currently active parking sessions with visitor count.
+    \end{itemize}
+    \item \textbf{Parking Zone Status}: A card displaying all parking zones in a 4-column grid. Each zone card shows the zone name, a status badge (Available / Nearly Full / Full), the number of available slots, total slots, and a progress bar with color-coded fill (green, yellow, or red).
+    \item \textbf{Recent Active Sessions}: A table listing the most recent 5 active sessions with columns for Session ID, User, Zone, Slot, Entry Time, Duration, and Status. A ``View All Sessions'' button appears if more than 5 sessions exist.
+    \item \textbf{System Notifications}: A list of system alerts with color-coded icons and borders (red for alerts, yellow for warnings, green for success, blue for informational).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{dashboard_admin.png}
+    \caption{Dashboard Overview -- Administrator/Operator view with system-wide statistics.}
+    \label{fig:dashboard-admin}
+\end{figure}
+
+\subsection{End User View}
+
+\begin{itemize}
+    \item \textbf{Statistics Cards} (4-column grid):
+    \begin{itemize}
+        \item \textit{My Active Sessions} -- number of the user's currently active sessions.
+        \item \textit{Available Slots} -- system-wide available slots.
+        \item \textit{Current Debt} -- the user's accumulated parking debt in VND.
+        \item \textit{Vehicle} -- the user's registered vehicle plate and type.
+    \end{itemize}
+    \item \textbf{Parking Zone Status}: Same zone status grid as the admin view.
+    \item \textbf{My Active Sessions}: A table showing only the authenticated user's active sessions.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{dashboard_user.png}
+    \caption{Dashboard Overview -- End user view with personal parking information.}
+    \label{fig:dashboard-user}
+\end{figure}
+
+% ============================================================
+\section{Real-Time Parking Map}
+\label{sec:parking-map}
+% ============================================================
+
+The Parking Map page provides a live visualization of parking availability across the campus. It implements the real-time monitoring use case (UC-RTM-05).
+
+\subsection{Summary Cards}
+
+Four summary cards at the top display:
+\begin{itemize}
+    \item Available slots (green).
+    \item Occupied slots (red).
+    \item Total slots (blue).
+    \item Overall occupancy percentage (purple).
+\end{itemize}
+
+\subsection{Legend}
+
+A horizontal bar with color-coded indicators: Available (green), Occupied (red), Sensor Issue (yellow), and Your Vehicle (blue).
+
+\subsection{Zone Overview}
+
+A 4-column grid of clickable zone cards. Each card shows:
+\begin{itemize}
+    \item Zone name and status badge (Available / Nearly Full / Full).
+    \item Number of available slots out of total.
+    \item Supported vehicle types (motorbike, car) as outline badges.
+    \item An occupancy progress bar.
+\end{itemize}
+
+Clicking a zone card reveals the \textbf{Detailed Slot Map} -- a 10-column grid where each cell represents a parking slot. Slots are color-coded: green for available (showing slot number), red for occupied (showing a car icon), and yellow with a warning icon for sensor issues. Hovering over a slot displays a tooltip with details (status, vehicle plate if occupied).
+
+\subsection{Electronic Guidance Signage}
+
+A simulation of the physical LED signage boards at parking entry points (UC-RTM-03). Each zone is displayed as a dark panel with a large monospace number showing available slots (colored green, yellow, or red), or ``FULL'' in red text.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{parking_map.png}
+    \caption{Real-Time Parking Map -- Zone overview with availability indicators.}
+    \label{fig:parking-map}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{parking_map_slots.png}
+    \caption{Parking Map -- Detailed slot-level view when a zone is selected.}
+    \label{fig:parking-map-slots}
+\end{figure}
+
+% ============================================================
+\section{My Sessions (End User)}
+\label{sec:my-sessions}
+% ============================================================
+
+This page allows end users to view their personal parking history and currently active sessions.
+
+\subsection{Statistics Cards}
+
+Four summary cards displaying:
+\begin{itemize}
+    \item Active Sessions (green icon).
+    \item Total Sessions (blue icon).
+    \item Average Duration (orange icon).
+    \item Total Spent in VND (purple icon).
+\end{itemize}
+
+\subsection{Currently Parked}
+
+When the user has an active session, a highlighted green card appears showing:
+\begin{itemize}
+    \item An ``ACTIVE'' badge and Session ID.
+    \item Zone name, slot number, and entry time.
+    \item Current duration displayed prominently.
+\end{itemize}
+
+\subsection{Parking History}
+
+A table listing past completed sessions with columns: Date, Zone, Entry Time, Exit Time, Duration, Fee (in VND), and Status (``Completed'' badge).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{my_sessions.png}
+    \caption{My Sessions -- Personal parking history and active session details.}
+    \label{fig:my-sessions}
+\end{figure}
+
+% ============================================================
+\section{Billing \& Payments (End User)}
+\label{sec:billing}
+% ============================================================
+
+The Billing page implements the financial operations use cases (UC-FO-01, UC-FO-03) and shows the user's parking fees and payment history.
+
+\subsection{Balance Cards}
+
+Three cards across the top:
+\begin{itemize}
+    \item \textbf{Current Debt}: Displayed in red if outstanding, green if zero. Includes a note about BKPay billing cycle.
+    \item \textbf{Total Paid (This Year)}: Total amount paid with session count.
+    \item \textbf{Payment Method}: Shows ``BKPay'' linked to the HCMUT account.
+\end{itemize}
+
+\subsection{How Accumulated Billing Works}
+
+An informational blue card explaining the three-step billing process:
+\begin{enumerate}
+    \item Park your vehicle (tap ID card at entry/exit).
+    \item Fees accumulate per session.
+    \item Monthly billing via BKPay.
+\end{enumerate}
+
+\subsection{Current Billing Period}
+
+A table showing all parking sessions for the current month with columns: Date, Zone, Duration, and Fee. A footer row displays the total fees for the period.
+
+\subsection{Transaction History}
+
+A list of BKPay transactions, each showing:
+\begin{itemize}
+    \item Transaction type icon (green checkmark for payments, red receipt for charges).
+    \item Description and date.
+    \item Amount with color coding (green for paid, red for charges).
+    \item Status badge (Pending/Paid/Failed).
+\end{itemize}
+
+\subsection{Pay Now}
+
+If the user has outstanding debt, a bottom card offers a ``Pay via BKPay'' button to clear the balance early.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{billing.png}
+    \caption{Billing \& Payments -- Debt overview, billing explanation, and transaction history.}
+    \label{fig:billing}
+\end{figure}
+
+% ============================================================
+\section{All Sessions (Admin / Operator)}
+\label{sec:all-sessions}
+% ============================================================
+
+This page provides administrators and operators with a comprehensive view of all parking sessions in the system.
+
+\subsection{Statistics Cards}
+
+Four cards showing: Active Sessions, Completed Today, Active Visitors, and Average Duration.
+
+\subsection{Filters}
+
+A filter bar containing:
+\begin{itemize}
+    \item A search input (searchable by session ID, vehicle plate, or user name).
+    \item A zone dropdown filter (All Zones, or a specific zone).
+    \item A status dropdown filter (All Status, Active, Completed).
+\end{itemize}
+
+\subsection{Session Records}
+
+A tabbed table with three tabs: ``Active'', ``Completed'', and ``All''. The table includes columns: Session ID, User (with visitor indicator), Vehicle Plate, Zone/Slot, Entry Time, Exit Time, Duration, Fee, and Status badge.
+
+An ``Export Data'' button is available in the page header.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{all_sessions.png}
+    \caption{All Sessions -- System-wide session management with filters and tabbed views.}
+    \label{fig:all-sessions}
+\end{figure}
+
+% ============================================================
+\section{User Management (Admin Only)}
+\label{sec:user-management}
+% ============================================================
+
+The User Management page (UC-ADM-03) is accessible only to administrators and provides tools to manage system users.
+
+\subsection{Statistics Cards}
+
+Six compact cards across the top displaying counts: Total Users, Learners (green), Faculty (purple), Staff (blue), Operators (orange), and Admins (red).
+
+\subsection{Search and Filter}
+
+\begin{itemize}
+    \item A search input to find users by name, email, or ID.
+    \item A role filter dropdown (All Roles, Admin, Operator, Faculty, Staff, Learner).
+\end{itemize}
+
+\subsection{Users Table}
+
+A table with columns: User (name, email, student ID), Role (color-coded badge), Department, Card ID (monospace), Vehicle (plate and type), Status (Active/Inactive/Suspended badge), and Actions.
+
+\subsection{Manage User Dialog}
+
+Clicking the ``Manage'' button on a user row opens a modal dialog allowing administrators to:
+\begin{itemize}
+    \item View the user's current role badge.
+    \item Change the user's system access role via a dropdown.
+    \item Save the role change or suspend the user.
+\end{itemize}
+
+A note clarifies that role changes affect system access level, not the DATACORE identity role.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{user_management.png}
+    \caption{User Management -- User listing with role management dialog.}
+    \label{fig:user-management}
+\end{figure}
+
+% ============================================================
+\section{Pricing Policies (Admin Only)}
+\label{sec:pricing}
+% ============================================================
+
+The Pricing Policies page (UC-ADM-04) allows administrators to configure parking fee structures.
+
+\subsection{Policy Cards}
+
+Policies are displayed as a grid of cards (3 columns). Each card shows:
+\begin{itemize}
+    \item Policy name and an active/inactive toggle switch.
+    \item User role and vehicle type as outline badges.
+    \item Billing type badge (Accumulated -- blue, Immediate -- orange, Exempt -- green).
+    \item Rate per hour, flat rate, and maximum daily rate in VND.
+    \item Billing cycle (monthly).
+    \item An ``Edit Policy'' button.
+\end{itemize}
+
+Inactive policies are displayed with reduced opacity (60\%).
+
+\subsection{Add / Edit Policy Dialog}
+
+Modal dialogs for creating or editing a policy contain form fields:
+\begin{itemize}
+    \item Policy Name, User Role, Vehicle Type, Billing Type (dropdowns).
+    \item Rate/Hour, Flat Rate, and Max Daily Rate (numeric inputs in VND).
+    \item An active/inactive toggle.
+\end{itemize}
+
+\subsection{Fee Calculation Engine}
+
+An informational card explaining how parking fees are calculated for:
+\begin{itemize}
+    \item \textbf{Accumulated Billing} (Learners/Staff): Entry scan $\to$ exit duration calculation $\to$ fee added to debt $\to$ monthly BKPay billing.
+    \item \textbf{Immediate Payment} (Visitors): Ticket at entry $\to$ ticket scan at exit $\to$ fee calculated $\to$ immediate cash/QR payment.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{pricing_policies.png}
+    \caption{Pricing Policies -- Fee structure configuration with policy cards.}
+    \label{fig:pricing}
+\end{figure}
+
+% ============================================================
+\section{Reports \& Analytics (Admin Only)}
+\label{sec:reports}
+% ============================================================
+
+The Reports page (UC-ADM-05) provides data visualization and analytics for system administrators.
+
+\subsection{Controls}
+
+\begin{itemize}
+    \item A date range selector (Today, This Week, This Month, This Quarter).
+    \item An ``Export Report'' button.
+\end{itemize}
+
+\subsection{Key Metrics}
+
+Four metric cards: Total Sessions (with trend percentage), Revenue (in thousands VND), Average Occupancy (with peak time), and Average Duration per session.
+
+\subsection{Charts}
+
+The page features four interactive charts built with the \textbf{Recharts} library:
+
+\begin{enumerate}
+    \item \textbf{Daily Occupancy Pattern} (Line Chart): Shows occupancy percentage throughout the day (6:00--20:00). The line is colored in the theme's dark blue (\texttt{\#003366}).
+    \item \textbf{Weekly Sessions} (Bar Chart): Displays the number of parking sessions per day of the week (Monday--Sunday) using dark blue bars with rounded tops.
+    \item \textbf{User Type Distribution} (Donut/Pie Chart): A ring chart showing the percentage breakdown of parking users by category -- Learners (green), Faculty (purple), Staff (blue), and Visitors (orange). A legend is displayed below the chart.
+    \item \textbf{Zone Utilization} (Progress Bars): Horizontal progress bars for each parking zone, showing the current capacity usage with color coding (green $<70\%$, yellow $\geq 70\%$, red $\geq 90\%$).
+\end{enumerate}
+
+\subsection{Financial Summary}
+
+Four colored panels showing: Total Revenue (green), Pending Debt (yellow), Visitor Revenue (blue), and Average Fee per Session (purple).
+
+\subsection{Custom Report Generator}
+
+Three clickable cards for generating specific reports: Occupancy Statistics, Revenue Summary, and Session Logs. Each card has an icon, title, and a brief description.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{reports_analytics.png}
+    \caption{Reports \& Analytics -- Data visualizations with charts and financial summary.}
+    \label{fig:reports}
+\end{figure}
+
+% ============================================================
+\section{Visitor Ticket Management (Admin / Operator)}
+\label{sec:visitor-tickets}
+% ============================================================
+
+The Visitor Ticket Management page handles visitor access control (UC-ACC-02) and visitor payment processing (UC-FO-02).
+
+\subsection{Statistics Cards}
+
+Three cards showing: Active Visitor Tickets (orange), Today's Visitor Revenue in VND (green), and Total Visitors Today (blue).
+
+\subsection{Issue New Ticket Dialog}
+
+Clicking ``Issue New Ticket'' opens a dialog containing:
+\begin{itemize}
+    \item A QR code placeholder icon with an auto-generated ticket ID (format: \texttt{TKT-YYYYMMDDNNN}).
+    \item An optional vehicle plate input field (captured by LPR camera).
+    \item A parking zone selector (only zones with available slots are listed).
+    \item Visitor rate information (Motorbike: 3,000 VND/hour, Car: 10,000 VND/hour).
+    \item A ``Print Ticket \& Open Gate'' button.
+\end{itemize}
+
+\subsection{Active Visitor Sessions}
+
+A table listing all currently parked visitors with columns: Ticket ID, Vehicle Plate, Zone/Slot, Entry Time, Duration, Estimated Fee (in orange), and a ``Process Exit'' action button.
+
+\subsection{Process Payment Dialog}
+
+Clicking ``Process Exit'' opens a payment dialog showing:
+\begin{itemize}
+    \item A summary panel with Ticket ID, Vehicle, Duration, and Total Fee.
+    \item A payment method selector (Cash or QR Code).
+    \item A ``Confirm Payment \& Open Gate'' button (green).
+\end{itemize}
+
+\subsection{Handle Access Exceptions}
+
+A section for handling lost tickets (UC-ACC-05) with:
+\begin{itemize}
+    \item A vehicle plate search input to find entry records.
+    \item A manual override input with reason field (all actions are logged for auditing).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{visitor_tickets.png}
+    \caption{Visitor Ticket Management -- Ticket issuance, active visitors, and payment processing.}
+    \label{fig:visitor-tickets}
+\end{figure}
+
+% ============================================================
+\section{Settings}
+\label{sec:settings}
+% ============================================================
+
+The Settings page is accessible to all authenticated users and is organized into four tabs.
+
+\subsection{Profile Tab}
+
+Displays read-only personal information synchronized from HCMUT\_DATACORE:
+\begin{itemize}
+    \item User avatar (initials on a dark blue circle), full name, email, and role badge.
+    \item Form fields (disabled): Full Name, Email, Phone, Faculty/Department, Student ID, and Card ID.
+    \item An informational note explaining that profile data is read-only and managed by the university.
+\end{itemize}
+
+\subsection{Vehicle Tab}
+
+Displays the user's registered vehicle information:
+\begin{itemize}
+    \item Vehicle Plate (displayed in large bold text) and Vehicle Type.
+    \item Applicable pricing policy details (rate type, flat rate, payment method).
+    \item A notice for registering a new vehicle at the parking office.
+\end{itemize}
+
+\subsection{Notifications Tab}
+
+Toggle switches for notification preferences:
+\begin{itemize}
+    \item Parking Entry/Exit Alerts.
+    \item Billing Notifications.
+    \item Zone Availability Alerts.
+    \item System Announcements.
+\end{itemize}
+
+A ``Save Preferences'' button applies changes.
+
+\subsection{Security Tab}
+
+Security-related settings:
+\begin{itemize}
+    \item Account status indicator (green ``Secure'' badge for SSO-protected accounts).
+    \item Password management (redirects to HCMUT SSO portal).
+    \item Two-Factor Authentication toggle (with ``Not Enabled'' warning badge).
+    \item Recent Login Activity log showing date, time, and application name.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{settings_profile.png}
+    \caption{Settings -- Profile tab showing read-only user information from HCMUT\_DATACORE.}
+    \label{fig:settings-profile}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{settings_notifications.png}
+    \caption{Settings -- Notifications tab with toggle switches for alert preferences.}
+    \label{fig:settings-notifications}
+\end{figure}
+
+% ============================================================
+\section{Responsive Design}
+\label{sec:responsive}
+% ============================================================
+
+The application is fully responsive across devices:
+
+\begin{itemize}
+    \item \textbf{Desktop} ($\geq$1024px): Full sidebar navigation is always visible alongside the main content. Grid layouts use 4 columns for statistics cards.
+    \item \textbf{Tablet} (768px--1023px): Sidebar collapses and can be toggled via the hamburger menu. Grid layouts typically reduce to 2 columns.
+    \item \textbf{Mobile} ($<$768px): Sidebar overlays the content with a dark backdrop. Grid layouts stack into single columns. The user's name and email in the header are hidden, showing only the avatar.
+\end{itemize}
+
+Tables use horizontal scrolling (\texttt{overflow-x-auto}) on smaller screens to maintain readability.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{mobile_view.png}
+    \caption{Mobile responsive view with collapsed sidebar and stacked layout.}
+    \label{fig:mobile-view}
+\end{figure}
+
+% ============================================================
+\section{Design System Summary}
+\label{sec:design-system}
+% ============================================================
+
+\subsection{Color Palette}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{Element} & \textbf{Color} & \textbf{Hex Code} \\
+\midrule
+Primary (Header, Buttons) & Dark Blue & \texttt{\#003366} \\
+Login Header & Dark Purple & \texttt{\#210F7A} \\
+Login Background & Light Gray & \texttt{\#EEEEEE} \\
+Input Background (Login) & Pale Yellow & \texttt{\#FFFFDD} \\
+Dashboard Background & Off White & \texttt{\#F9FAFB} \\
+Error Text (Login) & Dark Red & \texttt{\#BB0000} \\
+Section Headings (Login) & Maroon & \texttt{\#990033} \\
+Available Status & Green & Various shades \\
+Nearly Full Status & Yellow & Various shades \\
+Full / Error Status & Red & Various shades \\
+\bottomrule
+\end{tabular}
+\caption{Primary color palette used across the application.}
+\label{tab:colors}
+\end{table}
+
+\subsection{Typography}
+
+\begin{itemize}
+    \item \textbf{Login Page}: Helvetica, Arial, sans-serif at 13px base size.
+    \item \textbf{Dashboard}: System default sans-serif with Tailwind CSS typography utilities.
+    \item \textbf{Headings}: Bold, ranging from 2xl (24px) for page titles to sm (14px) for card titles.
+    \item \textbf{Monospace}: Used for Session IDs, Ticket IDs, and Card IDs.
+\end{itemize}
+
+\subsection{Component Library}
+
+The application uses \textbf{shadcn/ui} components extensively:
+\begin{itemize}
+    \item \texttt{Card}, \texttt{Button}, \texttt{Badge}, \texttt{Input}, \texttt{Select}, \texttt{Dialog}
+    \item \texttt{Tabs}, \texttt{Switch}, \texttt{Checkbox}, \texttt{Avatar}
+    \item \texttt{DropdownMenu}, \texttt{Table}, \texttt{Tooltip}
+\end{itemize}
+
+\subsection{Icons}
+
+All icons are sourced from the \textbf{Lucide React} icon library, including: \texttt{Car}, \texttt{MapPin}, \texttt{Clock}, \texttt{CreditCard}, \texttt{Users}, \texttt{BarChart3}, \texttt{Bell}, \texttt{Ticket}, \texttt{Settings}, and others.
+
+% ============================================================
+\section{Summary of Screens}
+\label{sec:summary}
+% ============================================================
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{llll}
+\toprule
+\textbf{Screen} & \textbf{Route} & \textbf{Access} & \textbf{Use Case} \\
+\midrule
+Login Page & \texttt{/} & Public & Authentication \\
+Dashboard Overview & \texttt{/dashboard} & All roles & UC-RTM-05 \\
+Parking Map & \texttt{/dashboard/parking-map} & All roles & UC-RTM-03, 05 \\
+My Sessions & \texttt{/dashboard/my-sessions} & End users & -- \\
+Billing \& Payments & \texttt{/dashboard/billing} & End users & UC-FO-01, 03 \\
+All Sessions & \texttt{/dashboard/sessions} & Admin, Operator & -- \\
+User Management & \texttt{/dashboard/users} & Admin only & UC-ADM-03 \\
+Pricing Policies & \texttt{/dashboard/pricing} & Admin only & UC-ADM-04 \\
+Reports \& Analytics & \texttt{/dashboard/reports} & Admin only & UC-ADM-05 \\
+Visitor Tickets & \texttt{/dashboard/visitor-tickets} & Admin, Operator & UC-ACC-02, UC-FO-02 \\
+Settings & \texttt{/dashboard/settings} & All roles & -- \\
+\bottomrule
+\end{tabular}
+\caption{Summary of all application screens with routes and access control.}
+\label{tab:screens}
+\end{table}
+
+\end{document}
