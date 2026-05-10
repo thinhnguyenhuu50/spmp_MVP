@@ -1,15 +1,19 @@
 'use client';
+import {
+  // ... các icon khác
+  AlertTriangle  // thêm icon này
+} from 'lucide-react';
 
 import { useAuth } from '@/lib/auth-context';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { 
-  Car, 
-  LayoutDashboard, 
-  MapPin, 
-  History, 
-  CreditCard, 
-  Settings, 
+import {
+  Car,
+  LayoutDashboard,
+  MapPin,
+  History,
+  CreditCard,
+  Settings,
   LogOut,
   Users,
   BarChart3,
@@ -71,6 +75,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     { href: '/dashboard/parking-map', label: 'Parking Map', icon: MapPin },
     { href: '/dashboard/sessions', label: 'All Sessions', icon: History },
     { href: '/dashboard/visitor-tickets', label: 'Visitor Tickets', icon: Ticket },
+    { href: '/dashboard/manual-override', label: 'Manual Override', icon: AlertTriangle },
   ];
 
   const navItems = isAdmin ? adminNavItems : isOperator ? operatorNavItems : userNavItems;
@@ -201,8 +206,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   onClick={() => setSidebarOpen(false)}
                   className={`
                     flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                    ${isActive 
-                      ? 'bg-[#003366] text-white' 
+                    ${isActive
+                      ? 'bg-[#003366] text-white'
                       : 'text-gray-700 hover:bg-gray-100'
                     }
                   `}
@@ -233,7 +238,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* Overlay */}
         {sidebarOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black/50 z-30 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
